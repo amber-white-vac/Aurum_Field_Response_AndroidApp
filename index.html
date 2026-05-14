@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>Aurum Field Response — Android App Demo</title>
+  <meta
+    name="description"
+    content="A native Android field-response demo app with a live operational map, synthetic rugged-device tracker movement, telemetry-based risk classification, map flags, notifications, and sidebar workflows."
+  />
+
+  <meta property="og:title" content="Aurum Field Response — Android App Demo" />
+  <meta
+    property="og:description"
+    content="Android operational map demo with synthetic field-user tracking, telemetry-based incident classification, map flags, local notifications, and workflow selection."
+  />
+  <meta property="og:type" content="website" />
+
+  <style>
+    :root {
+      --bg: #050816;
+      --panel: rgba(15, 23, 42, 0.88);
+      --text: #f8fafc;
+      --muted: #cbd5e1;
+      --accent: #facc15;
+      --accent-2: #38bdf8;
+      --danger: #fb7185;
+      --border: rgba(148, 163, 184, 0.24);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(250, 204, 21, 0.20), transparent 34%),
+        radial-gradient(circle at bottom right, rgba(56, 189, 248, 0.20), transparent 34%),
+        radial-gradient(circle at center right, rgba(251, 113, 133, 0.12), transparent 28%),
+        var(--bg);
+      color: var(--text);
+      display: grid;
+      place-items: center;
+      padding: 32px;
+    }
+
+    main {
+      width: min(1020px, 100%);
+      border: 1px solid var(--border);
+      background: var(--panel);
+      border-radius: 28px;
+      padding: clamp(32px, 6vw, 72px);
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+    }
+
+    .eyebrow {
+      color: var(--accent);
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      font-size: clamp(2.4rem, 7vw, 5.2rem);
+      line-height: 0.98;
+      margin: 0 0 24px;
+      letter-spacing: -0.055em;
+    }
+
+    h2 {
+      margin: 44px 0 18px;
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      letter-spacing: -0.035em;
+    }
+
+    .gradient-text {
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    p {
+      max-width: 800px;
+      color: var(--muted);
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      line-height: 1.7;
+      margin: 0 0 28px;
+    }
+
+    .video-frame {
+      width: 100%;
+      margin: 34px 0 30px;
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      overflow: hidden;
+      background: rgba(2, 6, 23, 0.7);
+      box-shadow: 0 18px 52px rgba(0, 0, 0, 0.32);
+    }
+
+    video {
+      display: block;
+      width: 100%;
+      max-height: 680px;
+      background: #020617;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 28px 0 34px;
+    }
+
+    .pill {
+      border: 1px solid var(--border);
+      color: #e2e8f0;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 0.9rem;
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .feature-list {
+      display: grid;
+      gap: 12px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .feature-list li {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 14px 16px;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.04);
+      line-height: 1.55;
+    }
+
+    .feature-list strong {
+      color: var(--text);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      align-items: center;
+      justify-content: center;
+      margin-top: 38px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 58px;
+      padding: 0 34px;
+      border-radius: 999px;
+      background: var(--accent);
+      color: #020617;
+      text-decoration: none;
+      font-size: 1.08rem;
+      font-weight: 850;
+      box-shadow: 0 14px 36px rgba(250, 204, 21, 0.28);
+    }
+
+    .secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 0 22px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .note {
+      margin-top: 28px;
+      color: #94a3b8;
+      font-size: 0.94rem;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <div class="eyebrow">Android Field Operations Demo</div>
+
+    <h1>
+      Aurum Field <span class="gradient-text">Response</span>
+    </h1>
+
+    <p>
+      A native Android demo app for field-response monitoring, built around a live operational map,
+      synthetic rugged-device tracker movement, telemetry-based incident classification, and
+      workflow-driven response visibility.
+    </p>
+
+    <div class="meta" aria-label="Project skills">
+      <span class="pill">Android</span>
+      <span class="pill">Kotlin</span>
+      <span class="pill">Operational Map UI</span>
+      <span class="pill">Synthetic Telemetry</span>
+      <span class="pill">Incident Flags</span>
+      <span class="pill">Local Notifications</span>
+      <span class="pill">Workflow Routing</span>
+    </div>
+
+    <div class="video-frame" aria-label="Aurum Field Response demo video">
+      <video controls>
+        <source src="Aurum Field Response Video.mp4" type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+    </div>
+
+    <h2>What the app demonstrates</h2>
+
+    <ul class="feature-list">
+      <li><strong>Live operational map:</strong> Opens directly to a field-response map interface.</li>
+      <li><strong>Three moving field users:</strong> Streams synthetic rugged-device tracker movement.</li>
+      <li><strong>Telemetry risk classification:</strong> Detects critical dose-rate alarms, controlled-boundary breaches, lost device signals, and elevated dose-rate advisories.</li>
+      <li><strong>Color-coded incident flags:</strong> Creates a visible map flag for each classified incident.</li>
+      <li><strong>Android alert behavior:</strong> Sends a local push-style notification when a new flag is created.</li>
+      <li><strong>In-app response prompt:</strong> Shows a bottom-of-map alert when new activity appears.</li>
+      <li><strong>Sidebar workflow selection:</strong> Tapping a map flag selects the matching workflow panel.</li>
+      <li><strong>Clean telemetry abstraction:</strong> Keeps synthetic data isolated behind <strong>TrackerSource</strong> so real telemetry can replace it cleanly later.</li>
+    </ul>
+
+    <div class="actions">
+      <a
+        class="button"
+        href="Aurum Field Response Video.mp4"
+        target="_blank"
+        rel="noreferrer"
+      >
+        Open Demo Video
+      </a>
+
+      <a
+        class="secondary"
+        href="https://github.com/amber-white-vac/Aurum_Field_Response_AndroidApp"
+        target="_blank"
+        rel="noreferrer"
+      >
+        View GitHub Repo
+      </a>
+    </div>
+
+    <div class="note">
+      Demo uses synthetic tracker data only. The app structure keeps the tracker source replaceable for future real telemetry integration.
+    </div>
+  </main>
+</body>
+</html>
