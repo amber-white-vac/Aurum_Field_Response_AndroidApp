@@ -35,6 +35,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -42,6 +43,9 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -182,12 +186,6 @@ private fun FieldResponseScreen(
                     flagCount = uiState.flags.size,
                     modifier = Modifier.align(Alignment.TopCenter),
                 )
-                uiState.latestAlert?.let { flag ->
-                    InAppAlert(
-                        flag = flag,
-                        modifier = Modifier.align(Alignment.BottomCenter),
-                    )
-                }
             }
 
             ResponseSidebar(
@@ -416,20 +414,6 @@ private fun StatusPill(text: String, color: Color) {
 }
 
 @Composable
-private fun InAppAlert(flag: IncidentFlag, modifier: Modifier = Modifier) {
-    Card(
-        modifier = modifier.padding(14.dp).fillMaxWidth(),
-        shape = RoundedCornerShape(8.dp),
-        colors = CardDefaults.cardColors(containerColor = flag.severity.flagColor()),
-    ) {
-        Column(modifier = Modifier.padding(14.dp)) {
-            Text(flag.title, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-            Text(flag.detail, color = Color.White, fontSize = 13.sp)
-        }
-    }
-}
-
-@Composable
 private fun ResponseSidebar(
     flags: List<IncidentFlag>,
     selectedFlag: IncidentFlag?,
@@ -475,7 +459,14 @@ private fun ResponseSidebar(
             }
         }
 
-        WorkflowPanel(activeWorkflow)
+        WorkflowPanel(
+            workflow = activeWorkflow,
+            accentColor = selectedFlag
+                ?.takeIf { it.workflow == activeWorkflow }
+                ?.severity
+                ?.flagColor()
+                ?: activeWorkflow.defaultAccentColor(),
+        )
     }
 }
 
@@ -508,13 +499,31 @@ private fun FlagListItem(flag: IncidentFlag, selected: Boolean, onClick: () -> U
 }
 
 @Composable
-private fun WorkflowPanel(workflow: ResponseWorkflow) {
+private fun WorkflowPanel(workflow: ResponseWorkflow, accentColor: Color) {
+    var isDetailOpen by remember { mutableStateOf(false) }
+
+    if (isDetailOpen) {
+        WorkflowDetailDialog(
+            workflow = workflow,
+            accentColor = accentColor,
+            onDismiss = { isDetailOpen = false },
+        )
+    }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .border(2.dp, accentColor, RoundedCornerShape(8.dp))
             .background(Color(0xFF17201C), RoundedCornerShape(8.dp))
             .padding(10.dp),
     ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(5.dp)
+                .background(accentColor, RoundedCornerShape(4.dp)),
+        )
+        Spacer(Modifier.height(8.dp))
         Text(workflow.title, color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Bold)
         Spacer(Modifier.height(8.dp))
         workflow.steps.forEachIndexed { index, step ->
@@ -522,13 +531,64 @@ private fun WorkflowPanel(workflow: ResponseWorkflow) {
             Spacer(Modifier.height(5.dp))
         }
         Button(
-            onClick = {},
+            onClick = { isDetailOpen = true },
             modifier = Modifier.fillMaxWidth().height(36.dp),
             shape = RoundedCornerShape(7.dp),
         ) {
             Text("Open", fontSize = 12.sp)
         }
     }
+}
+
+@Composable
+private fun WorkflowDetailDialog(
+    workflow: ResponseWorkflow,
+    accentColor: Color,
+    onDismiss: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Column {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(7.dp)
+                        .background(accentColor, RoundedCornerShape(4.dp)),
+                )
+                Spacer(Modifier.height(10.dp))
+                Text(
+                    text = workflow.title,
+                    color = Color(0xFF17201C),
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
+        },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                workflow.steps.forEachIndexed { index, step ->
+                    Text(
+                        text = "${index + 1}. $step",
+                        color = Color(0xFF30443B),
+                        fontSize = 15.sp,
+                        lineHeight = 20.sp,
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Close")
+            }
+        },
+    )
+}
+
+private fun ResponseWorkflow.defaultAccentColor(): Color = when (this) {
+    ResponseWorkflow.DoseAlarm -> Severity.Critical.flagColor()
+    ResponseWorkflow.BoundaryBreach -> Severity.Elevated.flagColor()
+    ResponseWorkflow.LostSignal -> Severity.Advisory.flagColor()
 }
 
 private fun FieldCoordinate.project(size: Size): Offset {
