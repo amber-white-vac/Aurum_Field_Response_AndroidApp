@@ -1,0 +1,33 @@
+# Local assistant/workspace scratch
+.codex_tmp/
+.gradle-cache/
+.pycache-check/
+.vac_eventbridge_setup/
+
+# Other local playground projects/artifacts
+Family-Doodles-FireTV-main-work/
+grantbot/
+biographer-*.zip
+mancala-emulator-home.png
+
+# Android / Gradle noise
+**/.gradle/
+**/.kotlin/
+**/build/
+**/local.properties
+**/*.apk
+**/*.ap_
+**/*.aab
+**/*.jks
+**/captures/
+**/.externalNativeBuild/
+**/.cxx/
+**/gradle-daemon-jvm.properties
+
+# IDE state
+**/.idea/
+*.iml
+
+# OS files
+.DS_Store
+Thumbs.db

@@ -1,0 +1,28 @@
+# Local machine config
+local.properties
+
+# Gradle and Kotlin caches
+.gradle/
+.kotlin/
+build/
+**/build/
+gradle/gradle-daemon-jvm.properties
+
+# IDE state
+.idea/
+*.iml
+
+# Packaged outputs
+*.apk
+*.ap_
+*.aab
+
+# Signing material
+*.jks
+*.keystore
+key.properties
+
+# Generated native/build folders
+.externalNativeBuild/
+.cxx/
+captures/
